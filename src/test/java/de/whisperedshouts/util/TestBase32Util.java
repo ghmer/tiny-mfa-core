@@ -1,7 +1,7 @@
 /**
  * 
  */
-package de.whisperedshouts.tinymfa.tests;
+package de.whisperedshouts.util;
 
 import static org.junit.Assert.*;
 
@@ -21,7 +21,7 @@ import de.whisperedshouts.util.Base32Util;
  * @author mario.ragucci
  *
  */
-public class Base32Tests {
+public class TestBase32Util {
 
   public List<byte[]> secretList = new ArrayList<>();
   public List<String> decrypt = new ArrayList<>();
