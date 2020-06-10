@@ -9,11 +9,12 @@ import java.security.SignatureException;
 import java.util.Arrays;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
-import org.apache.log4j.Logger;
 
 import de.whisperedshouts.util.Base32Util;
 
@@ -28,7 +29,7 @@ import de.whisperedshouts.util.Base32Util;
 public class TinyMfaImplementation {
 
   //a logger object. Make use of it!
-  private static final Logger _logger = Logger.getLogger(TinyMfaImplementation.class);
+  private static final Logger _logger = Logger.getLogger(TinyMfaImplementation.class.getName());
    
   // this is the default, static width used in the dynamic truncation
   public static final int DYNAMIC_TRUNCATION_WIDTH = 4;
@@ -53,8 +54,8 @@ public class TinyMfaImplementation {
    */
   private static byte[] calculateRFC2104HMAC(byte[] data, byte[] key)
       throws SignatureException, NoSuchAlgorithmException, InvalidKeyException {
-    if (_logger.isTraceEnabled()) {
-      _logger.trace(String.format("ENTERING method %s(data %s, key %s)", "calculateRFC2104HMAC", data, key));
+      if (_logger.isLoggable(Level.FINEST)) {
+      _logger.finest(String.format("ENTERING method %s(data %s, key %s)", "calculateRFC2104HMAC", data, key));
     }
     byte[] result = null;
     SecretKeySpec signingKey = new SecretKeySpec(key, HMAC_SHA1_ALGORITHM);
@@ -63,8 +64,8 @@ public class TinyMfaImplementation {
     messageAuthCode.init(signingKey);
     result = messageAuthCode.doFinal(data);
 
-    if (_logger.isTraceEnabled()) {
-      _logger.trace(String.format("LEAVING method %s (returns: %s)", "calculateRFC2104HMAC", result));
+    if (_logger.isLoggable(Level.FINEST)) {
+      _logger.finest(String.format("LEAVING method %s (returns: %s)", "calculateRFC2104HMAC", result));
     }
     return result;
   }
@@ -75,8 +76,8 @@ public class TinyMfaImplementation {
    * @return the base32 encoded secretKey
    */
   public static String generateBase32EncodedSecretKey() {
-    if (_logger.isDebugEnabled()) {
-      _logger.debug(String.format("ENTERING method %s()", "generateBase32EncodedSecretKey"));
+    if (_logger.isLoggable(Level.FINE)) {
+      _logger.fine(String.format("ENTERING method %s()", "generateBase32EncodedSecretKey"));
     }
     // Allocating the buffer
     byte[] buffer = new byte[128];
@@ -89,8 +90,8 @@ public class TinyMfaImplementation {
     byte[] bEncodedKey  = Base32Util.encode(secretKey);
     String encodedKey   = new String(bEncodedKey);
 
-    if (_logger.isDebugEnabled()) {
-      _logger.debug(String.format("LEAVING method %s (returns: %s)", "generateBase32EncodedSecretKey", encodedKey));
+    if (_logger.isLoggable(Level.FINE)) {
+      _logger.fine(String.format("LEAVING method %s (returns: %s)", "generateBase32EncodedSecretKey", encodedKey));
     }
     return encodedKey;
   }
@@ -106,10 +107,10 @@ public class TinyMfaImplementation {
    * @throws Exception when we hit an issue
    */
   public static int generateValidToken(Long message, String base32SecretKey) throws Exception {
-    if(_logger.isTraceEnabled()) {
-      _logger.trace(String.format("ENTERING method %s(message %s, base32SecretKey %s)", "generateValidToken", message, base32SecretKey));
-    } else if (_logger.isDebugEnabled()) {
-      _logger.debug(String.format("ENTERING method %s(message %s, base32SecretKey %s)", "generateValidToken", message, "***"));
+    if(_logger.isLoggable(Level.FINEST)) {
+      _logger.finest(String.format("ENTERING method %s(message %s, base32SecretKey %s)", "generateValidToken", message, base32SecretKey));
+    } else if (_logger.isLoggable(Level.FINE)) {
+      _logger.fine(String.format("ENTERING method %s(message %s, base32SecretKey %s)", "generateValidToken", message, "***"));
     }
     int token           = 0;
     byte[] keyBytes     = null;
@@ -127,8 +128,8 @@ public class TinyMfaImplementation {
       // this will be used as a offset. i.E if the last byte was 4 (as decimal),
       // we will derive the dynamic trunacted result, starting at the 4th index of the byte array
       int offset = rfc2104hmac[(rfc2104hmac.length - 1)] & 0xF;
-      if (_logger.isTraceEnabled()) {
-        _logger.trace(String.format("using offset %d for dynamic truncation", (int) offset));
+      if (_logger.isLoggable(Level.FINEST)) {
+        _logger.finest(String.format("using offset %d for dynamic truncation", (int) offset));
       }
       // probably int is too small (since there is no unsigned integer)
       // therefore, a long variable is used
@@ -149,14 +150,14 @@ public class TinyMfaImplementation {
       token = (int) dynamicTruncatedResult;
 
     } catch (InvalidKeyException | SignatureException | NoSuchAlgorithmException e) {
-      _logger.error(e.getMessage(), e);
+      _logger.severe(e.getMessage());
       throw new Exception(e.getMessage());
     }
 
-    if(_logger.isTraceEnabled()) {
-      _logger.trace(String.format("LEAVING method %s (returns: %s)", "generateValidToken", token));
-    } else if (_logger.isDebugEnabled()) {
-      _logger.debug(String.format("LEAVING method %s (returns: %s)", "generateValidToken", "***"));
+    if(_logger.isLoggable(Level.FINEST)) {
+      _logger.finest(String.format("LEAVING method %s (returns: %s)", "generateValidToken", token));
+    } else if (_logger.isLoggable(Level.FINE)) {
+      _logger.fine(String.format("LEAVING method %s (returns: %s)", "generateValidToken", "***"));
     }
     return token;
   }
@@ -170,15 +171,15 @@ public class TinyMfaImplementation {
    * @return the message
    */
   public static long getValidMessageBySystemTimestamp() {
-    if (_logger.isDebugEnabled()) {
-      _logger.debug(String.format("ENTERING method %s()", "getValidMessageBySystemTimestamp"));
+    if (_logger.isLoggable(Level.FINE)) {
+      _logger.fine(String.format("ENTERING method %s()", "getValidMessageBySystemTimestamp"));
     }
     long systemTime = System.currentTimeMillis();
     long message    = systemTime - (systemTime % 30);
     message         = (long) Math.floor(message / TimeUnit.SECONDS.toMillis(30));
 
-    if (_logger.isDebugEnabled()) {
-      _logger.debug(String.format("LEAVING method %s (returns: %s)", "getValidMessageBySystemTimestamp", message));
+    if (_logger.isLoggable(Level.FINE)) {
+      _logger.fine(String.format("LEAVING method %s (returns: %s)", "getValidMessageBySystemTimestamp", message));
     }
     return message;
   }
@@ -191,8 +192,8 @@ public class TinyMfaImplementation {
    * @return the byteArray according to specification
    */
   private static byte[] longToByteArray(long message) {
-    if (_logger.isDebugEnabled()) {
-      _logger.debug(String.format("ENTERING method %s(message %s)", "longToByteArray", message));
+    if (_logger.isLoggable(Level.FINE)) {
+      _logger.fine(String.format("ENTERING method %s(message %s)", "longToByteArray", message));
     }
 
     // define the array
@@ -203,8 +204,8 @@ public class TinyMfaImplementation {
       data[i]  = (byte) value;
     }
 
-    if (_logger.isDebugEnabled()) {
-      _logger.debug(String.format("LEAVING method %s (returns: %s)", "longToByteArray", data));
+    if (_logger.isLoggable(Level.FINE)) {
+      _logger.fine(String.format("LEAVING method %s (returns: %s)", "longToByteArray", data));
     }
     return data;
   }
