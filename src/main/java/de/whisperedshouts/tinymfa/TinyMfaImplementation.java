@@ -113,9 +113,12 @@ public class TinyMfaImplementation {
         return bEncodedKey;
     }
 
+    
     /**
      * Generates a new secretKey and encodes it to base32
      * 
+     * @deprecated this returns a String object, that is immutable in java. 
+     * Better use either generateBase32EncodedSecretKeyByteArray() or generateBase32EncodedSecretKeyCharArray
      * @return the base32 encoded secretKey
      */
     @Deprecated
@@ -139,6 +142,11 @@ public class TinyMfaImplementation {
         return encodedKey;
     }
 
+    /**
+     * Generates a new secretKey and encodes it to base32
+     * 
+     * @return the base32 encoded secretKey as a char array
+     */
     public static char[] generateBase32EncodedSecretKeyCharArray() {
         if (_logger.isLoggable(Level.FINE)) {
             _logger.fine(String.format("ENTERING method %s()", "generateBase32EncodedSecretKeyCharArray"));
@@ -163,6 +171,7 @@ public class TinyMfaImplementation {
     /**
      * generates a valid token for a timestamp and a base32 encoded secretKey
      * 
+     * @deprecated use the alternatives for char- and byte arrays
      * @param message
      *            the timestamp to use when calculating the token
      * @param base32SecretKey
@@ -490,6 +499,7 @@ public class TinyMfaImplementation {
     /**
      * Tests a submitted token against the submitted base32EncodedKey
      * 
+     * @deprecated use the alternatives provided for char- or byte arrays
      * @param token
      *            the token to test
      * @param base32EncodedKey
