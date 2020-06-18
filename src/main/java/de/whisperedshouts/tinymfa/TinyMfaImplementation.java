@@ -73,7 +73,7 @@ public class TinyMfaImplementation {
             throws SignatureException, NoSuchAlgorithmException, InvalidKeyException {
         _logger.entering(TinyMfaImplementation.class.getName(), 
                 "calculateRFC2104HMAC", 
-                new Object[] {data, key});
+                new Object[] {data, "***"});
         
         byte[] result               = null;
         SecretKeySpec signingKey    = new SecretKeySpec(key, HMAC_SHA1_ALGORITHM);
