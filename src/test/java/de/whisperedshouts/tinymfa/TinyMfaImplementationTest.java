@@ -15,17 +15,19 @@ import org.junit.Test;
 public class TinyMfaImplementationTest {
 
     public static final String TESTKEY          = "NOU4XWWCB4ZJOPNZRF6WRTFRMQ======";
-    public static final long   MESSAGE_PAST     = 53082851;
-    public static final long   MESSAGE_PRESENT  = 53082852;
-    public static final long   MESSAGE_FUTURE   = 53082853;
-    public static final long   TOTP             = 935619;
+    public static final long   TOTP             = 935619L;
+    public static final long   MESSAGE_PAST     = 53082851L;
+    public static final long   MESSAGE_PRESENT  = 53082852L;
+    public static final long   MESSAGE_FUTURE   = 53082853L;
     public static final long   TIMESTAMP        = 1592485571800L;
 
+    @SuppressWarnings("deprecation")
     @Test
     public void testGenerateBase32EncodedSecretKey() {
         assertNotNull(TinyMfaImplementation.generateBase32EncodedSecretKey());
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     public void testGenerateValidToken() {
         int token;
