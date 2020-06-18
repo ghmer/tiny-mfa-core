@@ -177,6 +177,26 @@ public class TinyMfaImplementation {
 
         return encodedKey;
     }
+    
+    /**
+     * Generates a new secretKey and encodes it to base32
+     * @param keySize
+     *            the size (in bytes) of the key to generate
+     * @return the base32 encoded secretKey as a char array
+     */
+    public static char[] generateBase32EncodedSecretKeyCharArray(int keySize) {
+        _logger.entering(TinyMfaImplementation.class.getName(), 
+                "generateBase32EncodedSecretKeyCharArray");
+
+        byte[] bEncodedKey = generateBase32EncodedSecretKeyByteArray(keySize);
+        char[] encodedKey  = byteArrayToCharArray(bEncodedKey);
+
+        _logger.exiting(TinyMfaImplementation.class.getName(), 
+                "generateBase32EncodedSecretKeyCharArray", 
+                "***");
+
+        return encodedKey;
+    }
 
     /**
      * generates a valid token for a timestamp and a base32 encoded secretKey
