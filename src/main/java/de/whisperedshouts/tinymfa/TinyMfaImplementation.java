@@ -110,7 +110,8 @@ public class TinyMfaImplementation {
     /**
      * Generates a new secretKey and encodes it to base32
      * 
-     * @param keySize the size (in bytes) of the key to generate
+     * @param keySize
+     *            the size (in bytes) of the key to generate
      * @return the byte array representation of the base32 encoded secret key
      */
     public static byte[] generateBase32EncodedSecretKeyByteArray(int keySize) {
@@ -138,8 +139,9 @@ public class TinyMfaImplementation {
     /**
      * Generates a new secretKey and encodes it to base32
      * 
-     * @deprecated this returns a String object, that is immutable in java. 
-     * Better use either generateBase32EncodedSecretKeyByteArray() or generateBase32EncodedSecretKeyCharArray
+     * @deprecated this returns a String object, that is immutable in java.
+     *             Better use either generateBase32EncodedSecretKeyByteArray()
+     *             or generateBase32EncodedSecretKeyCharArray
      * @return the base32 encoded secretKey
      */
     @Deprecated
@@ -231,8 +233,8 @@ public class TinyMfaImplementation {
         int token = 0;
         
         try {
-            byte[] keyByteArray = charArrayToByteArray(base32SecretKey);
-            token = generateValidToken(message, keyByteArray);
+            byte[] byteArray = charArrayToByteArray(base32SecretKey);
+            token = generateValidToken(message, byteArray);
 
         } catch (InvalidKeyException | SignatureException | NoSuchAlgorithmException e) {
             _logger.severe(e.getMessage());
@@ -277,8 +279,7 @@ public class TinyMfaImplementation {
 
             // get the decimal representation of the last byte
             // this will be used as a offset. i.E if the last byte was 4 (as
-            // decimal),
-            // we will derive the dynamic trunacted result, starting at the 4th
+            // decimal), we will derive the dynamic trunacted result, starting at the 4th
             // index of the byte array
             int offset = rfc2104hmac[(rfc2104hmac.length - 1)] & 0xF;
             if (_logger.isLoggable(Level.FINEST)) {
@@ -319,7 +320,9 @@ public class TinyMfaImplementation {
      * the current system time (Milliseconds since 1970), then remove the
      * seconds elapsed since the last half minute (i.E. 34 becomes 30). Last, we
      * divide this by 30.
-     * @param systemTimestamp the timestamp to use
+     * 
+     * @param systemTimestamp
+     *            the timestamp to use
      * @return the message
      */
     public static long getValidMessageBySystemTimestamp(long systemTimestamp) {
@@ -345,7 +348,8 @@ public class TinyMfaImplementation {
      * @param offsetType
      *            the type of offset to apply. You can use the static integers
      *            OFFSET_PRESENT, OFFSET_PAST and OFFSET_FUTURE.
-     * @param systemTimestamp the timestamp to use
+     * @param systemTimestamp
+     *            the timestamp to use
      * @return the message
      */
     public static long getValidMessageBySystemTimestamp(long systemTimestamp, int offsetType) {
@@ -490,11 +494,10 @@ public class TinyMfaImplementation {
 
     /**
      * converts a long to a byteArray.
-     * @deprecated 
-     *              deprecated in favor of using the 
-     *              ByteBuffer of the java.nio package
-     *              to drastically improve readability
-     *              check out method 'messageToByteArray(long message)'
+     * 
+     * @deprecated deprecated in favor of using the ByteBuffer of the java.nio
+     *             package to drastically improve readability check out method
+     *             'messageToByteArray(long message)'
      * @param message
      *            the long to convert to a byteArray
      * @return the byteArray according to specification
@@ -523,6 +526,7 @@ public class TinyMfaImplementation {
     
     /**
      * converts a long to a byteArray.
+     * 
      * @param message
      *            the long to convert to a byteArray
      * @return the byteArray according to specification
