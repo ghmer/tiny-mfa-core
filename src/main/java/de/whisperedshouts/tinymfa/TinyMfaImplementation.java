@@ -51,6 +51,11 @@ public class TinyMfaImplementation {
     // Indicator whether to apply an offset 30 seconds into the future for
     // creating the message
     public static final int OFFSET_FUTURE = 2;
+    
+    // upon key generation, a byte array is filled with random bytes
+    // In order to have enough random bytes available, the random byte array's size
+    // is going to be this times the keySize
+    public static final int BUFFER_MULTIPLICATOR = 8;
 
     /**
      * Calculates the hmac hash and returns its byteArray representation
@@ -113,7 +118,7 @@ public class TinyMfaImplementation {
                 "generateBase32EncodedSecretKeyByteArray");
         
         // Allocating the buffer
-        byte[] buffer = new byte[128];
+        byte[] buffer = new byte[(keySize * TinyMfaImplementation.BUFFER_MULTIPLICATOR)];
 
         // Filling the buffer with random numbers.
         new Random().nextBytes(buffer);
