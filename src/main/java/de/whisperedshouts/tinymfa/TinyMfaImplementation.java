@@ -23,7 +23,7 @@ import de.whisperedshouts.util.Base32Util;
  * 
  * 
  * @author Mario Enrico Ragucci, mario@whisperedshouts.de
- * @version 1.0
+ * @version 1.1.2
  *
  */
 public class TinyMfaImplementation {
@@ -68,9 +68,10 @@ public class TinyMfaImplementation {
         if (_logger.isLoggable(Level.FINEST)) {
             _logger.finest(String.format("ENTERING method %s(data %s, key %s)", "calculateRFC2104HMAC", data, key));
         }
-        byte[] result = null;
-        SecretKeySpec signingKey = new SecretKeySpec(key, HMAC_SHA1_ALGORITHM);
-        Mac messageAuthCode = Mac.getInstance(HMAC_SHA1_ALGORITHM);
+        
+        byte[] result               = null;
+        SecretKeySpec signingKey    = new SecretKeySpec(key, HMAC_SHA1_ALGORITHM);
+        Mac messageAuthCode         = Mac.getInstance(HMAC_SHA1_ALGORITHM);
 
         messageAuthCode.init(signingKey);
         result = messageAuthCode.doFinal(data);
@@ -128,7 +129,7 @@ public class TinyMfaImplementation {
         }
 
         byte[] bEncodedKey = generateBase32EncodedSecretKeyByteArray();
-        String encodedKey = new String(bEncodedKey);
+        String encodedKey  = new String(bEncodedKey);
 
         if (_logger.isLoggable(Level.FINEST)) {
             _logger.finest(
@@ -153,7 +154,7 @@ public class TinyMfaImplementation {
         }
 
         byte[] bEncodedKey = generateBase32EncodedSecretKeyByteArray();
-        char[] encodedKey = byteArrayToCharArray(bEncodedKey);
+        char[] encodedKey  = byteArrayToCharArray(bEncodedKey);
 
         if (_logger.isLoggable(Level.FINEST)) {
             _logger.finest(String.format("LEAVING method %s (returns: %s)", "generateBase32EncodedSecretKeyCharArray",
@@ -185,11 +186,13 @@ public class TinyMfaImplementation {
         if (_logger.isLoggable(Level.FINEST)) {
             _logger.finest(String.format("ENTERING method %s(message %s, base32SecretKey %s)", "generateValidToken",
                     message, base32SecretKey));
-        } else
+        } else {
             if (_logger.isLoggable(Level.FINE)) {
                 _logger.fine(String.format("ENTERING method %s(message %s, base32SecretKey %s)", "generateValidToken",
                         message, "***"));
             }
+        }
+        
         int token = 0;
         try {
 
@@ -227,14 +230,16 @@ public class TinyMfaImplementation {
         if (_logger.isLoggable(Level.FINEST)) {
             _logger.finest(String.format("ENTERING method %s(message %s, base32SecretKey %s)", "generateValidToken",
                     message, base32SecretKey));
-        } else
+        } else {
             if (_logger.isLoggable(Level.FINE)) {
                 _logger.fine(String.format("ENTERING method %s(message %s, base32SecretKey %s)", "generateValidToken",
                         message, "***"));
             }
+        }
+        
         int token = 0;
+        
         try {
-
             byte[] keyByteArray = charArrayToByteArray(base32SecretKey);
             token = generateValidToken(message, keyByteArray);
 
@@ -276,9 +281,10 @@ public class TinyMfaImplementation {
             }
         }
 
-        int token = 0;
-        byte[] keyBytes = null;
+        int token           = 0;
+        byte[] keyBytes     = null;
         byte[] messageBytes = null;
+        
         // let's process
         try {
             // the key is base32 encoded
@@ -336,15 +342,15 @@ public class TinyMfaImplementation {
      * the current system time (Milliseconds since 1970), then remove the
      * seconds elapsed since the last half minute (i.E. 34 becomes 30). Last, we
      * divide this by 30.
-     * 
+     * @param systemTimestamp the timestamp to use
      * @return the message
      */
-    public static long getValidMessageBySystemTimestamp() {
+    public static long getValidMessageBySystemTimestamp(long systemTimestamp) {
         if (_logger.isLoggable(Level.FINE)) {
-            _logger.fine(String.format("ENTERING method %s()", "getValidMessageBySystemTimestamp"));
+            _logger.fine(String.format("ENTERING method %s(systemTimestamp %s)", "getValidMessageBySystemTimestamp", systemTimestamp));
         }
 
-        long message = getValidMessageBySystemTimestamp(OFFSET_PRESENT);
+        long message = getValidMessageBySystemTimestamp(systemTimestamp, OFFSET_PRESENT);
 
         if (_logger.isLoggable(Level.FINEST)) {
             _logger.finest(
@@ -368,24 +374,25 @@ public class TinyMfaImplementation {
      * @param offsetType
      *            the type of offset to apply. You can use the static integers
      *            OFFSET_PRESENT, OFFSET_PAST and OFFSET_FUTURE.
+     * @param systemTimestamp the timestamp to use
      * @return the message
      */
-    public static long getValidMessageBySystemTimestamp(int offsetType) {
+    public static long getValidMessageBySystemTimestamp(long systemTimestamp, int offsetType) {
         if (_logger.isLoggable(Level.FINE)) {
             _logger.fine(
-                    String.format("ENTERING method %s(offsetType %s)", "getValidMessageBySystemTimestamp", offsetType));
+                    String.format("ENTERING method %s(systemTimestamp %s, offsetType %s)", "getValidMessageBySystemTimestamp", systemTimestamp, offsetType));
         }
 
         long offset = 0;
         switch (offsetType) {
             case OFFSET_PRESENT:
-                offset = 0;
+                offset =   0;
                 break;
             case OFFSET_PAST:
-                offset = -30;
+                offset = -30000;
                 break;
             case OFFSET_FUTURE:
-                offset = 30;
+                offset =  30000;
                 break;
 
             default:
@@ -393,9 +400,9 @@ public class TinyMfaImplementation {
                 break;
         }
 
-        long systemTime = System.currentTimeMillis() + offset;
-        long message = systemTime - (systemTime % 30);
-        message = (long) Math.floor(message / TimeUnit.SECONDS.toMillis(30));
+        long systemTime = systemTimestamp + offset;
+        long message    = systemTime - (systemTime % 30);
+        message         = (long) Math.floor(message / TimeUnit.SECONDS.toMillis(30));
 
         if (_logger.isLoggable(Level.FINEST)) {
             _logger.finest(
@@ -484,9 +491,9 @@ public class TinyMfaImplementation {
             }
         }
 
-        boolean result = false;
+        boolean result      = false;
         byte[] keyByteArray = charArrayToByteArray(base32EncodedKey);
-        result = validateToken(token, keyByteArray);
+        result              = validateToken(token, keyByteArray);
 
         // no matter what, we now return the result;
         if (_logger.isLoggable(Level.FINE)) {
@@ -518,9 +525,9 @@ public class TinyMfaImplementation {
             }
         }
 
-        boolean result = false;
+        boolean result      = false;
         byte[] keyByteArray = base32EncodedKey.getBytes();
-        result = validateToken(token, keyByteArray);
+        result              = validateToken(token, keyByteArray);
 
         // no matter what, we now return the result;
         if (_logger.isLoggable(Level.FINE)) {
@@ -548,7 +555,7 @@ public class TinyMfaImplementation {
 
         // define the array
         byte[] data = new byte[8];
-        long value = message;
+        long value  = message;
 
         for (int i = 8; i-- > 0; value >>>= 8) {
             data[i] = (byte) value;

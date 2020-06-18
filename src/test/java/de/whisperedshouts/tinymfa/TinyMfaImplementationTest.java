@@ -14,26 +14,49 @@ import org.junit.Test;
  */
 public class TinyMfaImplementationTest {
 
-    public static final String TESTKEY = "NOU4XWWCB4ZJOPNZRF6WRTFRMQ======";
-    public static final long   MESSAGE = 53060604;
-    public static final long   TOTP    = 208443;
+    public static final String TESTKEY          = "NOU4XWWCB4ZJOPNZRF6WRTFRMQ======";
+    public static final long   MESSAGE_PAST     = 53082851;
+    public static final long   MESSAGE_PRESENT  = 53082852;
+    public static final long   MESSAGE_FUTURE   = 53082853;
+    public static final long   TOTP             = 935619;
+    public static final long   TIMESTAMP        = 1592485571800L;
 
-    /**
-     * Test method for {@link de.whisperedshouts.tinymfa.TinyMfaImplementation#generateBase32EncodedSecretKey()}.
-     */
     @Test
     public void testGenerateBase32EncodedSecretKey() {
         assertNotNull(TinyMfaImplementation.generateBase32EncodedSecretKey());
     }
 
-    /**
-     * Test method for {@link de.whisperedshouts.tinymfa.TinyMfaImplementation#generateValidToken(java.lang.Long, java.lang.String)}.
-     */
     @Test
     public void testGenerateValidToken() {
         int token;
         try {
-            token = TinyMfaImplementation.generateValidToken(MESSAGE, TESTKEY);
+            token = TinyMfaImplementation.generateValidToken(MESSAGE_PRESENT, TESTKEY);
+            assertNotEquals(token, 0);
+            assertEquals(token, TOTP);
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
+        
+    }
+    
+    @Test
+    public void testGenerateValidTokenWithCharArray() {
+        int token;
+        try {
+            token = TinyMfaImplementation.generateValidToken(MESSAGE_PRESENT, TESTKEY.toCharArray());
+            assertNotEquals(token, 0);
+            assertEquals(token, TOTP);
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
+        
+    }
+    
+    @Test
+    public void testGenerateValidTokenWithByteArray() {
+        int token;
+        try {
+            token = TinyMfaImplementation.generateValidToken(MESSAGE_PRESENT, TESTKEY.getBytes());
             assertNotEquals(token, 0);
             assertEquals(token, TOTP);
         } catch (Exception e) {
@@ -42,12 +65,24 @@ public class TinyMfaImplementationTest {
         
     }
 
-    /**
-     * Test method for {@link de.whisperedshouts.tinymfa.TinyMfaImplementation#getValidMessageBySystemTimestamp()}.
-     */
     @Test
     public void testGetValidMessageBySystemTimestamp() {
-        assertNotNull(TinyMfaImplementation.getValidMessageBySystemTimestamp());
+        long message = TinyMfaImplementation.getValidMessageBySystemTimestamp(TIMESTAMP);
+        assertNotNull(message);
+        assertEquals(MESSAGE_PRESENT, message);
     }
-
+    
+    @Test
+    public void testGetValidFutureMessageBySystemTimestamp() {
+        long message = TinyMfaImplementation.getValidMessageBySystemTimestamp(TIMESTAMP, TinyMfaImplementation.OFFSET_FUTURE);
+        assertNotNull(message);
+        assertEquals(MESSAGE_FUTURE, message);
+    }
+    
+    @Test
+    public void testGetValidPastMessageBySystemTimestamp() {
+        long message = TinyMfaImplementation.getValidMessageBySystemTimestamp(TIMESTAMP, TinyMfaImplementation.OFFSET_PAST);
+        assertNotNull(message);
+        assertEquals(MESSAGE_PAST, message);
+    }
 }
