@@ -116,7 +116,8 @@ public class TinyMfaImplementation {
      */
     public static byte[] generateBase32EncodedSecretKeyByteArray(int keySize) {
         _logger.entering(TinyMfaImplementation.class.getName(), 
-                "generateBase32EncodedSecretKeyByteArray");
+                "generateBase32EncodedSecretKeyByteArray",
+                keySize);
         
         // Allocating the buffer
         byte[] buffer = new byte[(keySize * TinyMfaImplementation.BUFFER_MULTIPLICATOR)];
@@ -186,7 +187,8 @@ public class TinyMfaImplementation {
      */
     public static char[] generateBase32EncodedSecretKeyCharArray(int keySize) {
         _logger.entering(TinyMfaImplementation.class.getName(), 
-                "generateBase32EncodedSecretKeyCharArray");
+                "generateBase32EncodedSecretKeyCharArray",
+                keySize);
 
         byte[] bEncodedKey = generateBase32EncodedSecretKeyByteArray(keySize);
         char[] encodedKey  = byteArrayToCharArray(bEncodedKey);
