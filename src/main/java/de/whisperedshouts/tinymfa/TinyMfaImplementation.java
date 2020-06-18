@@ -98,7 +98,7 @@ public class TinyMfaImplementation {
         new Random().nextBytes(buffer);
 
         // Getting the key and converting it to Base32
-        byte[] secretKey = Arrays.copyOf(buffer, TinyMfaImplementation.FINAL_SECRET_SIZE);
+        byte[] secretKey   = Arrays.copyOf(buffer, TinyMfaImplementation.FINAL_SECRET_SIZE);
         byte[] bEncodedKey = Base32Util.encode(secretKey);
 
         if (_logger.isLoggable(Level.FINEST)) {
@@ -385,18 +385,17 @@ public class TinyMfaImplementation {
 
         long offset = 0;
         switch (offsetType) {
-            case OFFSET_PRESENT:
-                offset =   0;
+            case OFFSET_PRESENT:    // Do not add an offset
+                offset += 0;
                 break;
-            case OFFSET_PAST:
-                offset = -30000;
+            case OFFSET_FUTURE:     // Add an offset of 30 second into the future
+                offset += 30000;
                 break;
-            case OFFSET_FUTURE:
-                offset =  30000;
+            case OFFSET_PAST:       // Add an offset of 30 second into the past
+                offset -= 30000;
                 break;
-
-            default:
-                offset = 0;
+            default:                // however you landed here - we will add no offset
+                offset += 0;
                 break;
         }
 
@@ -518,7 +517,7 @@ public class TinyMfaImplementation {
     @Deprecated
     public boolean validateToken(int token, String base32EncodedKey) throws Exception {
         if (_logger.isLoggable(Level.FINEST)) {
-            _logger.fine(String.format("ENTERING method %s(base32EncodedKey %s)", "validateToken", base32EncodedKey));
+            _logger.finest(String.format("ENTERING method %s(base32EncodedKey %s)", "validateToken", base32EncodedKey));
         } else {
             if (_logger.isLoggable(Level.FINE)) {
                 _logger.fine(String.format("ENTERING method %s(base32EncodedKey %s)", "validateToken", "***"));
