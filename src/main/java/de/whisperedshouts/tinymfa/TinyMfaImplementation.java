@@ -24,7 +24,7 @@ import de.whisperedshouts.util.Base32Util;
  * 
  * 
  * @author Mario Enrico Ragucci, mario@whisperedshouts.de
- * @version 1.1.2
+ * @version 1.2
  *
  */
 public class TinyMfaImplementation {
