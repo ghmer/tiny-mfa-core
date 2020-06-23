@@ -391,6 +391,10 @@ public class TinyMfaImplementation {
                 offset -= 30000;
                 break;
             default:                // however you landed here - we will add no offset
+                _logger.warning(String.format(
+                        "Supplied offsetType '%d' not valid. Calculating message without any offset.", 
+                        offsetType)
+                );
                 offset += 0;
                 break;
         }
