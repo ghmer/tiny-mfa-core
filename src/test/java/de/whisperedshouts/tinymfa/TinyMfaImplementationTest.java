@@ -87,4 +87,11 @@ public class TinyMfaImplementationTest {
         assertNotNull(message);
         assertEquals(MESSAGE_PAST, message);
     }
+    
+    @Test
+    public void testGetValidMessageWithWrongOffsetTypeBySystemTimestamp() {
+        long message = TinyMfaImplementation.getValidMessageBySystemTimestamp(TIMESTAMP, 5);
+        assertNotNull(message);
+        assertEquals(MESSAGE_PRESENT, message);
+    }
 }
